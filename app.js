@@ -1,7 +1,7 @@
 // 1. Importáljuk az Express modult
 const express = require('express');
 
-const { Sequelize } = require('sequelize'); // Importáljuk a Sequelize-t
+const { Sequelize, DataTypes } = require('sequelize'); // Importáljuk a Sequelize-t
 
 // 2. Létrehozzuk az alkalmazás példányát
 const app = express();
@@ -20,7 +20,8 @@ const sequelize = new Sequelize({
 });
 
 // 2. Modell importálása és beállítása
-const TaskModel = require('./models/Task')(sequelize); 
+const TaskModel = require('./models/Task')(sequelize, DataTypes); 
+const UserModel = require('./models/User')(sequelize, DataTypes); 
 
 // 3. Adatbázis Szinkronizálása és Szerver Indítása
 async function initializeApp() {
