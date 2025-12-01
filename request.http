@@ -4,11 +4,16 @@ POST http://localhost:3000/users
 Content-Type: application/json
 
 {
-    "email": "user2@server.com",
-    "name": "user2"
+    "email": "user20@server.com",
+    "name": "user20",
+    "password": "user2_pwd"
+
 }
 
 ### --------------------------------------------------
+
+
+
 
 ### 2. LÉPÉS: Hozz létre egy feladatot a felhasználóhoz
 # Cseréld le a "userId" értékét az előző lépésben kapott ID-ra!
