@@ -8,6 +8,9 @@ router.post('/', userController.createUser);
 // GET /users - Összes felhasználó lekérdezése
 router.get('/', userController.getAllUsers);
 
+// POST /users/register - Új felhasználó regisztrálása
+router.post('/register', userController.register);
+
 // DELETE /users/:id - Felhasználó és a hozzá tartozó feladatok törlése
 router.delete('/:id', userController.deleteUser);
 

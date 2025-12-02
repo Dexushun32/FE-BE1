@@ -47,3 +47,19 @@ module.exports = {
   getAllUsers,
   deleteUser,
 };
+
+const register = async (req, res) => {
+    try {
+      if (!req.body.email || !req.body.password) {
+        return res.status(400).json({ error: 'Az "email" és "password" mezők kitöltése kötelező.' });
+      }
+      const newUser = await userService.registerUser(req.body);
+      res.status(201).json(newUser);
+    } catch (error) {
+      console.error('Hiba az új user létrehozásakor:', error);
+      res.status(500).json({ error: 'Szerveroldali hiba.' });
+    }
+  };
+
+module.exports.register = register;
+module.exports = { createUser, getAllUsers, deleteUser, register };

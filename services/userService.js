@@ -1,5 +1,11 @@
 const userRepository = require('../repositories/userRepository');
 
+const registerUser = (userData) => {
+  // Itt lehetne a jövőben a jelszó titkosítása vagy egyéb regisztrációs logika
+  const { email, name, password } = userData;
+  return userRepository.create({ email, name, password });
+};
+
 const createUser = (userData) => {
   return userRepository.create(userData);
 };
@@ -23,4 +29,5 @@ module.exports = {
   createUser,
   getAllUsers,
   deleteUser,
+  registerUser,
 };
