@@ -1,11 +1,11 @@
 ### 1. LÉPÉS: Hozz létre egy felhasználót
 # A válaszban kapott "id"-t használd a következő kérésben!
-POST http://localhost:3000/users
+POST http://localhost:3000/users/register
 Content-Type: application/json
 
 {
-    "email": "user23@server.com",
-    "name": "user23",
+    "email": "user24@server.com",
+    "name": "user24",
     "password": "user23_pwd"
 
 }

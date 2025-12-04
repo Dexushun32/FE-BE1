@@ -1,4 +1,5 @@
-const { User } = require('../models'); // Feltételezzük, hogy a modellek egy index.js-en keresztül vannak exportálva
+const { models } = require('../db');
+const { User: UserModel } = models;
 
 /**
  * Új felhasználó létrehozása az adatbázisban.
@@ -6,7 +7,7 @@ const { User } = require('../models'); // Feltételezzük, hogy a modellek egy i
  * @returns {Promise<User>} A létrehozott felhasználó.
  */
 const create = (userData) => {
-  return User.create(userData);
+  return UserModel.create(userData);
 };
 
 /**
@@ -15,7 +16,7 @@ const create = (userData) => {
  * @returns {Promise<User|null>} A megtalált felhasználó vagy null.
  */
 const findOne = (query) => {
-  return User.findOne(query);
+  return UserModel.findOne(query);
 };
 
 /**
@@ -23,7 +24,7 @@ const findOne = (query) => {
  * @returns {Promise<User[]>} A felhasználók listája.
  */
 const findAll = () => {
-  return User.findAll();
+  return UserModel.findAll();
 };
 
 /**
@@ -32,7 +33,16 @@ const findAll = () => {
  * @returns {Promise<User|null>} A megtalált felhasználó vagy null.
  */
 const findById = (id) => {
-  return User.findByPk(id);
+  return UserModel.findByPk(id);
+};
+
+/**
+ * Felhasználó törlése azonosító alapján.
+ * @param {number} id A felhasználó azonosítója.
+ * @returns {Promise<number>} A törölt sorok száma (0 vagy 1).
+ */
+const deleteById = (id) => {
+  return UserModel.destroy({ where: { id: id } });
 };
 
 module.exports = {
@@ -40,4 +50,5 @@ module.exports = {
   findOne,
   findAll,
   findById,
+  deleteById,
 };

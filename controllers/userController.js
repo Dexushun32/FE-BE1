@@ -1,19 +1,5 @@
 const userService = require('../services/userService');
 
-// POST /users - Új felhasználó létrehozása
-const createUser = async (req, res) => {
-  try {
-    if (!req.body.email || !req.body.password) { // Hozzáadtuk a jelszó ellenőrzését is
-      return res.status(400).json({ error: 'Az "email" és "password" mezők kitöltése kötelező.' });
-    }
-    const newUser = await userService.registerUser(req.body); // A registerUser függvényt hívjuk meg
-    res.status(201).json(newUser);
-  } catch (error) {
-    console.error('Hiba az új user létrehozásakor:', error);
-    res.status(error.statusCode || 500).json({ error: error.message || 'Szerveroldali hiba.' }); // Frissített hibakezelés
-  }
-};
-
 // GET /users - Összes felhasználó lekérdezése
 const getAllUsers = async (req, res) => {
   try {
@@ -42,17 +28,8 @@ const deleteUser = async (req, res) => {
   }
 };
 
-module.exports = {
-  createUser,
-  getAllUsers,
-  deleteUser,
-};
-
-const register = async (req, res) => {
+const registerUser = async (req, res) => {
     try {
-      if (!req.body.email || !req.body.password) {
-        return res.status(400).json({ error: 'Az "email" és "password" mezők kitöltése kötelező.' });
-      }
       const newUser = await userService.registerUser(req.body);
       res.status(201).json(newUser);
     } catch (error) {
@@ -61,5 +38,8 @@ const register = async (req, res) => {
     }
   };
 
-module.exports.register = register;
-module.exports = { createUser, getAllUsers, deleteUser, register };
+
+module.exports = {
+  getAllUsers,
+  deleteUser,
+  registerUser };

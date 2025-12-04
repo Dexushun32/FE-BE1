@@ -20,29 +20,22 @@ const registerUser = async (userData) => {
   return userRepository.create({ email, name, password: hashedPassword });
 };
 
-const createUser = async (userData) => {
-  const { email, name, password } = userData; // Feltételezve, hogy a createUser is tartalmaz jelszót
-  const hashedPassword = await hashPassword(password);
-  return userRepository.create({ email, name, password: hashedPassword });
-};
-
 const getAllUsers = () => {
   return userRepository.findAll();
 };
 
 const deleteUser = async (id) => {
-  const user = await userRepository.findById(id);
-
-  if (!user) {
-    return null;
+  // Először ellenőrizzük, hogy létezik-e a felhasználó
+  const userToDelete = await userRepository.findById(id);
+  if (!userToDelete) {
+    return null; // Ha nem, null-t adunk vissza, a controller kezeli a 404-et
   }
 
-  await userRepository.destroy(user);
-  return user;
+  await userRepository.deleteById(id);
+  return userToDelete; // Visszaadjuk a törölt felhasználó adatait a sikeres művelet jelzésére
 };
 
 module.exports = {
-  createUser,
   getAllUsers,
   deleteUser,
   registerUser,

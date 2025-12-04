@@ -21,8 +21,13 @@ const findById = (id) => {
   return TaskModel.findByPk(id);
 };
 
-const destroy = (task) => {
-  return task.destroy();
+/**
+ * Feladat törlése azonosító alapján.
+ * @param {number} id A feladat azonosítója.
+ * @returns {Promise<number>} A törölt sorok száma (0 vagy 1).
+ */
+const deleteById = (id) => {
+  return TaskModel.destroy({ where: { id: id } });
 };
 
 module.exports = {
@@ -30,5 +35,5 @@ module.exports = {
   findAll,
   findAndCountAllPaginated,
   findById,
-  destroy,
+  deleteById,
 };

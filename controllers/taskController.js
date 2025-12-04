@@ -3,10 +3,6 @@ const taskService = require('../services/taskService');
 // POST /tasks
 const createTask = async (req, res) => {
   try {
-    if (!req.body.title || !req.body.userId) {
-      return res.status(400).json({ error: 'A "title" és "userId" mezők kitöltése kötelező.' });
-    }
-
     const newTask = await taskService.createTask(req.body);
     res.status(201).json(newTask);
   } catch (error) {
@@ -29,10 +25,7 @@ const getAllTasks = async (req, res) => {
 // GET /tasks/page/:page
 const getTasksPaginated = async (req, res) => {
   try {
-    const page = parseInt(req.params.page, 10);
-    if (isNaN(page) || page < 1) {
-      return res.status(400).json({ error: 'Érvénytelen oldalszám.' });
-    }
+    const page = parseInt(req.params.page, 10); // A validátor már biztosítja, hogy ez szám
     const result = await taskService.getTasksPaginated(page);
     res.json(result);
   } catch (error) {
