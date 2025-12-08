@@ -1,22 +1,20 @@
 const express = require('express');
 const router = express.Router();
 const userController = require('../controllers/userController');
+const tokenAuth = require('../middlewares/tokenAuth'); // Feltételezzük, hogy létezik egy tokenAuth middleware
+const adminAuth = require('../middlewares/adminAuth'); // Az új admin middleware importálása
 
-// --- MÓDOSÍTÁS KEZDETE ---
-const { registerValidationRules, loginValidationRules } = require('../validators/userValidators');
-const validate = require('../middlewares/validationHandler');
+// Felhasználó regisztrációja
+router.post('/register', userController.register);
 
-// GET /users - Összes felhasználó lekérdezése
-router.get('/', userController.getAllUsers);
+// Felhasználó bejelentkezése
+router.post('/login', userController.login);
 
-// POST /users/register - Új felhasználó regisztrálása
-router.post('/register', registerValidationRules(), validate, userController.registerUser);
+// Felhasználó kijelentkezése
+router.post('/logout', tokenAuth, userController.logout);
 
-// POST /users/login - Felhasználó bejelentkeztetése
-router.post('/login', loginValidationRules(), validate, userController.loginUser);
-// --- MÓDOSÍTÁS VÉGE ---
-
-// DELETE /users/:id - Felhasználó törlése
-router.delete('/:id', userController.deleteUser);
+// Összes felhasználó lekérdezése (csak adminoknak)
+// Először a tokenAuth fut le, majd az adminAuth, és csak utána a controller.
+router.get('/', tokenAuth, adminAuth, userController.getAllUsers);
 
 module.exports = router;

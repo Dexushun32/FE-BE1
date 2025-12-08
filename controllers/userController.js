@@ -1,59 +1,111 @@
-const userService = require('../services/userService');
+const userRepository = require('../repositories/userRepository');
+const bcrypt = require('bcrypt');
+const crypto = require('crypto');
 
-// GET /users - Összes felhasználó lekérdezése
+const saltRounds = 10;
+
+/**
+ * Handles user registration.
+ * Hashes the password before saving the user.
+ */
+const register = async (req, res) => {
+  const { email, name, password } = req.body;
+
+  if (!email || !password) {
+    return res.status(400).json({ message: 'Az email és a jelszó megadása kötelező.' });
+  }
+
+  try {
+    const existingUser = await userRepository.findOne({ where: { email } });
+    if (existingUser) {
+      return res.status(409).json({ message: 'Ez az e-mail cím már regisztrálva van.' });
+    }
+
+    const hashedPassword = await bcrypt.hash(password, saltRounds);
+
+    const newUser = await userRepository.create({
+      email,
+      name,
+      password: hashedPassword,
+      admin: false // Alapértelmezetten nem admin
+    });
+
+    // A válaszban ne küldjük vissza a jelszót
+    const { password: _, ...userResponse } = newUser.toJSON();
+    res.status(201).json(userResponse);
+  } catch (error) {
+    res.status(500).json({ message: 'Szerverhiba a regisztráció során.', error: error.message });
+  }
+};
+
+/**
+ * Handles user login.
+ * Generates and saves a token upon successful authentication.
+ */
+const login = async (req, res) => {
+  const { email, password } = req.body;
+
+  if (!email || !password) {
+    return res.status(400).json({ message: 'Az email és a jelszó megadása kötelező.' });
+  }
+
+  try {
+    const user = await userRepository.findOne({ where: { email } });
+    if (!user) {
+      return res.status(401).json({ message: 'Hibás e-mail cím vagy jelszó.' });
+    }
+
+    const match = await bcrypt.compare(password, user.password);
+    if (!match) {
+      return res.status(401).json({ message: 'Hibás e-mail cím vagy jelszó.' });
+    }
+
+    const token = crypto.randomBytes(32).toString('hex');
+    const valid_thru = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 órás érvényesség
+
+    await userRepository.update(user, { token, valid_thru });
+
+    res.json({ message: 'Sikeres bejelentkezés.', token, userId: user.id, isAdmin: user.admin });
+  } catch (error) {
+    res.status(500).json({ message: 'Szerverhiba a bejelentkezés során.', error: error.message });
+  }
+};
+
+/**
+ * Handles user logout.
+ * Invalidates the user's token.
+ */
+const logout = async (req, res) => {
+  try {
+    // A tokenAuth middleware csatolja a felhasználót a req.user-hez
+    await userRepository.update(req.user, { token: null, valid_thru: null });
+    res.json({ message: 'Sikeres kijelentkezés.' });
+  } catch (error) {
+    res.status(500).json({ message: 'Szerverhiba a kijelentkezés során.', error: error.message });
+  }
+};
+
+/**
+ * Gets all users. (Admin only)
+ * This function is protected by adminAuth middleware.
+ */
 const getAllUsers = async (req, res) => {
   try {
-    const users = await userService.getAllUsers();
-    res.json(users);
+    const users = await userRepository.findAll();
+    // Jelszavak eltávolítása a válaszból
+    const usersWithoutPasswords = users.map(user => {
+      const { password, token, ...userResponse } = user.toJSON();
+      return userResponse;
+    });
+    res.json(usersWithoutPasswords);
   } catch (error) {
-    console.error('Hiba a felhasználók lekérdezésekor:', error);
-    res.status(500).json({ error: 'Hiba a felhasználók lekérdezésekor.' });
+    res.status(500).json({ message: 'Szerverhiba a felhasználók lekérdezése során.', error: error.message });
   }
 };
-
-// DELETE /users/:id - Felhasználó törlése
-const deleteUser = async (req, res) => {
-  try {
-    const { id } = req.params;
-    const deletedUser = await userService.deleteUser(id);
-
-    if (!deletedUser) {
-      return res.status(404).json({ error: 'A megadott ID-val nem található felhasználó.' });
-    }
-
-    res.status(200).json({ message: `A(z) ${id} ID-jú felhasználó sikeresen törölve.` });
-  } catch (error) {
-    console.error('Hiba a felhasználó törlésekor:', error);
-    res.status(500).json({ error: 'Szerveroldali hiba a törlés során.' });
-  }
-};
-
-const registerUser = async (req, res) => {
-    try {
-      const newUser = await userService.registerUser(req.body);
-      res.status(201).json(newUser);
-    } catch (error) {
-      console.error('Hiba az új user létrehozásakor:', error);
-      res.status(error.statusCode || 500).json({ error: error.message || 'Szerveroldali hiba.' });
-    }
-  };
-
-// --- MÓDOSÍTÁS KEZDETE ---
-const loginUser = async (req, res) => {
-  try {
-    const { email, password } = req.body;
-    const result = await userService.loginUser(email, password);
-    res.status(200).json(result);
-  } catch (error) {
-    console.error('Hiba a bejelentkezés során:', error);
-    res.status(error.statusCode || 500).json({ error: error.message || 'Szerveroldali hiba.' });
-  }
-};
-// --- MÓDOSÍTÁS VÉGE ---
 
 module.exports = {
+  register,
+  login,
+  logout,
   getAllUsers,
-  deleteUser,
-  registerUser,
-  loginUser, // --- MÓDOSÍTÁS ---
 };

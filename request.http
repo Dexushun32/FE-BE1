@@ -16,7 +16,6 @@ Content-Type: application/json
 ### Bejelentkezés
 # Használd a regisztrált felhasználó adatait!
 # A @name direktívával elmentjük a választ egy 'loginResponse' nevű változóba.
-@name loginRequest
 POST http://localhost:3000/users/login
 Content-Type: application/json
 
@@ -30,7 +29,7 @@ Content-Type: application/json
 ### GET kérés az összes feladat lekérdezésére (AUTHENTIKÁLT)
 # FONTOS: A bejelentkezés után kapott tokent másold be ide a <...> helyére!
 GET http://localhost:3000/tasks
-Authorization: Bearer 2c88cf43d6c877bb80021b2a674c86157f855a607c107f436f0a993a65ef34a2
+Authorization: Bearer b49dfdcf5438d98e6bf65dabdb7ef17bc0fd0f562344b6767f726a2984a92a8f
 
 
 ### --------------------------------------------------
