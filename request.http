@@ -1,17 +1,39 @@
 ### 1. LÉPÉS: Hozz létre egy felhasználót
 # A válaszban kapott "id"-t használd a következő kérésben!
-POST http://localhost:3000/users
+POST http://localhost:3000/users/register
 Content-Type: application/json
 
 {
-    "email": "user20@server.com",
-    "name": "user20",
-    "password": "user2_pwd"
+    "email": "user26@server.com",
+    "name": "Teszt Elek",
+    "password": "user23_pwd"
 
+}
+//    "password": "user23_pwd"
+
+### --------------------------------------------------
+
+### Bejelentkezés
+# Használd a regisztrált felhasználó adatait!
+# A @name direktívával elmentjük a választ egy 'loginResponse' nevű változóba.
+@name loginRequest
+POST http://localhost:3000/users/login
+Content-Type: application/json
+
+{
+    "email": "user26@server.com",
+    "password": "user23_pwd"
 }
 
 ### --------------------------------------------------
 
+### GET kérés az összes feladat lekérdezésére (AUTHENTIKÁLT)
+# FONTOS: A bejelentkezés után kapott tokent másold be ide a <...> helyére!
+GET http://localhost:3000/tasks
+Authorization: Bearer 2c88cf43d6c877bb80021b2a674c86157f855a607c107f436f0a993a65ef34a2
+
+
+### --------------------------------------------------
 
 
 
@@ -41,12 +63,6 @@ Content-Type: application/json
 
 ### --------------------------------------------------
 
-### GET kérés az összes feladat lekérdezésére
-GET http://localhost:3000/tasks
-
-
-### --------------------------------------------------
-
 ### GET kérés az összes felhasználó lekérdezésére
 GET http://localhost:3000/users
 
@@ -66,4 +82,3 @@ DELETE http://localhost:3000/users/3
 GET http://localhost:3000/tasks/page/1
 
 ### --------------------------------------------------
-

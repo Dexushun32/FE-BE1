@@ -2,16 +2,21 @@ const express = require('express');
 const router = express.Router();
 const userController = require('../controllers/userController');
 
-// POST /users - Új felhasználó létrehozása
-router.post('/', userController.createUser);
+// --- MÓDOSÍTÁS KEZDETE ---
+const { registerValidationRules, loginValidationRules } = require('../validators/userValidators');
+const validate = require('../middlewares/validationHandler');
 
 // GET /users - Összes felhasználó lekérdezése
 router.get('/', userController.getAllUsers);
 
 // POST /users/register - Új felhasználó regisztrálása
-router.post('/register', userController.register);
+router.post('/register', registerValidationRules(), validate, userController.registerUser);
 
-// DELETE /users/:id - Felhasználó és a hozzá tartozó feladatok törlése
+// POST /users/login - Felhasználó bejelentkeztetése
+router.post('/login', loginValidationRules(), validate, userController.loginUser);
+// --- MÓDOSÍTÁS VÉGE ---
+
+// DELETE /users/:id - Felhasználó törlése
 router.delete('/:id', userController.deleteUser);
 
 module.exports = router;

@@ -1,3 +1,4 @@
+// d:\VTI\Documents\VSCode\FE-BE_1\FE-BE1\models\User.js
 module.exports = (sequelize, DataTypes) => {
   const User = sequelize.define('User', {
     id: {
@@ -13,25 +14,27 @@ module.exports = (sequelize, DataTypes) => {
     },
     name: {
       type: DataTypes.STRING,
-      allowNull: true // Opcionális
+      allowNull: true
     },
     password: {
       type: DataTypes.STRING,
-      allowNull: false // Kötelező
+      allowNull: false
+    },
+    token: {
+      type: DataTypes.STRING,
+      allowNull: true
+    },
+    valid_thru: {
+      type: DataTypes.DATE,
+      allowNull: true
     }
   }, {
-        // Ezzel kikapcsoljuk az automatikus 'createdAt' és 'updatedAt' mezők létrehozását
-    timestamps: false 
-    // További modell beállítások (pl. tableName: 'users')
+    timestamps: false
   });
 
-  // Itt definiáljuk a relációt.
-  // A Task modellt majd a fő index fájlban kapcsoljuk hozzá.
   User.associate = function(models) {
-    // Egy User-hez több Task tartozik (One-to-Many)
     User.hasMany(models.Task, {
-      foreignKey: 'userId', // Ez lesz az idegen kulcs a Task táblában
-      as: 'tasks'          // Ezt az alias-t használjuk az include-oknál
+      foreignKey: 'userId',
     });
   };
 

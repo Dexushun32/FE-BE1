@@ -1,19 +1,5 @@
 const userService = require('../services/userService');
 
-// POST /users - Új felhasználó létrehozása
-const createUser = async (req, res) => {
-  try {
-    if (!req.body.email) {
-      return res.status(400).json({ error: 'Az "email" mező kitöltése kötelező.' });
-    }
-    const newUser = await userService.createUser(req.body);
-    res.status(201).json(newUser);
-  } catch (error) {
-    console.error('Hiba az új user létrehozásakor:', error);
-    res.status(500).json({ error: 'Szerveroldali hiba.' });
-  }
-};
-
 // GET /users - Összes felhasználó lekérdezése
 const getAllUsers = async (req, res) => {
   try {
@@ -42,24 +28,32 @@ const deleteUser = async (req, res) => {
   }
 };
 
-module.exports = {
-  createUser,
-  getAllUsers,
-  deleteUser,
-};
-
-const register = async (req, res) => {
+const registerUser = async (req, res) => {
     try {
-      if (!req.body.email || !req.body.password) {
-        return res.status(400).json({ error: 'Az "email" és "password" mezők kitöltése kötelező.' });
-      }
       const newUser = await userService.registerUser(req.body);
       res.status(201).json(newUser);
     } catch (error) {
       console.error('Hiba az új user létrehozásakor:', error);
-      res.status(500).json({ error: 'Szerveroldali hiba.' });
+      res.status(error.statusCode || 500).json({ error: error.message || 'Szerveroldali hiba.' });
     }
   };
 
-module.exports.register = register;
-module.exports = { createUser, getAllUsers, deleteUser, register };
+// --- MÓDOSÍTÁS KEZDETE ---
+const loginUser = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    const result = await userService.loginUser(email, password);
+    res.status(200).json(result);
+  } catch (error) {
+    console.error('Hiba a bejelentkezés során:', error);
+    res.status(error.statusCode || 500).json({ error: error.message || 'Szerveroldali hiba.' });
+  }
+};
+// --- MÓDOSÍTÁS VÉGE ---
+
+module.exports = {
+  getAllUsers,
+  deleteUser,
+  registerUser,
+  loginUser, // --- MÓDOSÍTÁS ---
+};

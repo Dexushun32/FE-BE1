@@ -28,14 +28,14 @@ const getTasksPaginated = async (page) => {
 };
 
 const deleteTask = async (id) => {
-  const task = await taskRepository.findById(id);
-
-  if (!task) {
+  const taskToDelete = await taskRepository.findById(id);
+  if (!taskToDelete) {
     return null;
   }
 
-  await taskRepository.destroy(task);
-  return task;
+  await taskRepository.deleteById(id);
+  // Visszaadjuk a törölt feladat adatait a sikeres művelet jelzésére.
+  return taskToDelete;
 };
 
 module.exports = {
